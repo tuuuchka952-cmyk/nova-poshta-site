@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оформлення доставки</title>
+    <style>
+        :root {
+            --primary-color: #e4002b;
+            --dark-bg: #121212;
+            --darker-bg: #0a0a0a;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --border-color: #333;
+            --hover-color: #2a2a2a;
+            --success-color: #4CAF50;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .main-content {
+            padding: 40px 0;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .page-title {
+            font-size: 32px;
+            margin-bottom: 30px;
+            color: white;
+            text-align: center;
+        }
+        
+        .delivery-form {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            background-color: var(--darker-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(228, 0, 43, 0.1);
+        }
+        
+        .department-type {
+            margin: 16px 0;
+            padding: 16px;
+            background-color: var(--darker-bg);
+            border-radius: 6px;
+        }
+        
+        .department-type label {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 20px;
+            cursor: pointer;
+            font-weight: normal;
+        }
+        
+        .department-type input {
+            margin-right: 8px;
+        }
+        
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .btn:hover:not(:disabled) {
+            background-color: #c40024;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(228, 0, 43, 0.3);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #aaa;
+        }
+        
+        .departments-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            margin-top: 10px;
+            background-color: var(--darker-bg);
+        }
+        
+        .department-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .department-item:hover {
+            background-color: var(--hover-color);
+        }
+        
+        .department-item:last-child {
+            border-bottom: none;
+        }
+        
+        .department-name {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .department-address {
+            font-size: 14px;
+            color: #aaa;
+        }
+        
+        .department-type-badge {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 8px;
+            font-weight: 600;
+        }
+        
+        .success-message {
+            background-color: var(--success-color);
+            color: white;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 24px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .error-message {
+            background-color: #f44336;
+            color: white;
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        footer {
+            background-color: var(--darker-bg);
+            padding: 30px 0;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        
+        .footer-section {
+            flex: 1;
+            min-width: 200px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-section h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: white;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 8px;
+        }
+        
+        .footer-links a {
+            color: #aaa;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            color: #777;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .delivery-form {
+                padding: 24px;
+                margin: 0 16px;
+            }
+            
+            .department-type label {
+                display: block;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="main-content">
+        <div class="container">
+            <h1 class="page-title">Оформлення доставки</h1>
+            
+            <div class="delivery-form">
+                <div id="success-message" class="success-message" style="display: none;"></div>
+                
+                <div class="form-group">
+                    <label for="fullName">Повне ім'я *</label>
+                    <input type="text" id="fullName" class="form-control" placeholder="Введіть ваше повне ім'я" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Номер телефону *</label>
+                    <input type="tel" id="phone" class="form-control" placeholder="+38 (0__) ___ __ __" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Служба доставки</label>
+                    <div style="padding: 16px; background-color: var(--darker-bg); border-radius: 6px; border: 2px solid var(--primary-color);">
+                        <div style="font-weight: bold; font-size: 18px; margin-bottom: 8px;">Нова пошта</div>
+                        <div style="font-size: 14px; color: #aaa;">Доставка у відділення або поштомат</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="city">Населений пункт *</label>
+                    <input type="text" id="city" class="form-control" placeholder="Введіть назву міста або села" required>
+                    <div id="cities-list" class="departments-list" style="display: none;"></div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="department-type">
+                        <label>
+                            <input type="radio" name="departmentType" value="all" checked> Всі
+                        </label>
+                        <label>
+                            <input type="radio" name="departmentType" value="departments"> Відділення
+                        </label>
+                        <label>
+                            <input type="radio" name="departmentType" value="postmats"> Поштомати
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="department">Відділення / поштомат *</label>
+                    <input type="text" id="department" class="form-control" placeholder="Виберіть відділення або поштомат" required>
+                    <div id="departments-list" class="departments-list" style="display: none;"></div>
+                </div>
+                
+                <button class="btn" id="submit-btn" disabled>Підтвердити замовлення</button>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Контакти</h3>
+                    <ul class="footer-links">
+                        <li><a href="tel:+380441234567">+38 (044) 123-45-67</a></li>
+                        <li><a href="mailto:info@techstore.ua">info@techstore.ua</a></li>
+                        <li>Київ, вул. Прикладна, 12</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Інформація</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Про нас</a></li>
+                        <li><a href="#">Оплата</a></li>
+                        <li><a href="#">Доставка</a></li>
+                        <li><a href="#">Гарантія</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Категорії</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Смартфони</a></li>
+                        <li><a href="#">Ноутбуки</a></li>
+                        <li><a href="#">Планшети</a></li>
+                        <li><a href="#">Аксесуари</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2024 TECHSTORE. Всі права захищені.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cityInput = document.getElementById('city');
+            const departmentInput = document.getElementById('department');
+            const citiesList = document.getElementById('cities-list');
+            const departmentsList = document.getElementById('departments-list');
+            const submitBtn = document.getElementById('submit-btn');
+            const successMessage = document.getElementById('success-message');
+            
+            let selectedCity = '';
+            let selectedDepartment = '';
+            let currentSearchTimeout = null;
+            
+            // Обработчик ввода города
+            cityInput.addEventListener('input', function() {
+                const query = this.value.trim();
+                
+                if (currentSearchTimeout) {
+                    clearTimeout(currentSearchTimeout);
+                }
+                
+                if (query.length < 2) {
+                    citiesList.style.display = 'none';
+                    selectedCity = '';
+                    departmentInput.value = '';
+                    departmentsList.style.display = 'none';
+                    updateSubmitButton();
+                    return;
+                }
+                
+                currentSearchTimeout = setTimeout(() => {
+                    searchCitiesNovaPoshta(query);
+                }, 500);
+            });
+            
+            // Обработчик ввода отделения
+            departmentInput.addEventListener('input', function() {
+                if (!selectedCity) {
+                    showError(this, 'Спочатку виберіть населений пункт');
+                    this.value = '';
+                    return;
+                }
+                
+                const query = this.value.trim();
+                
+                if (currentSearchTimeout) {
+                    clearTimeout(currentSearchTimeout);
+                }
+                
+                if (query.length < 1) {
+                    departmentsList.style.display = 'none';
+                    selectedDepartment = '';
+                    updateSubmitButton();
+                    return;
+                }
+                
+                currentSearchTimeout = setTimeout(() => {
+                    searchDepartmentsNovaPoshta(query);
+                }, 500);
+            });
+            
+            // Обработчик изменения типа отделений
+            document.querySelectorAll('input[name="departmentType"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (departmentInput.value.trim()) {
+                        searchDepartmentsNovaPoshta(departmentInput.value.trim());
+                    }
+                });
+            });
+            
+            // Поиск городов для Новой Почты через API
+            async function searchCitiesNovaPoshta(query) {
+                try {
+                    citiesList.innerHTML = '<div class="loading">Пошук...</div>';
+                    citiesList.style.display = 'block';
+                    
+                    const response = await fetch('/api/cities', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ search: query })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Помилка сервера');
+                    }
+                    
+                    const cities = await response.json();
+                    
+                    if (cities.error) {
+                        throw new Error(cities.error);
+                    }
+                    
+                    displayCities(cities);
+                } catch (error) {
+                    console.error('Error searching cities:', error);
+                    citiesList.innerHTML = '<div class="department-item">Помилка пошуку: ' + error.message + '</div>';
+                }
+            }
+            
+            // Функция отображения списка городов
+            function displayCities(cities) {
+                citiesList.innerHTML = '';
+                
+                if (!cities || cities.length === 0) {
+                    citiesList.innerHTML = '<div class="department-item">Нічого не знайдено</div>';
+                } else {
+                    cities.forEach(city => {
+                        const item = document.createElement('div');
+                        item.className = 'department-item';
+                        item.innerHTML = `<div class="department-name">${city.name}</div>`;
+                        item.addEventListener('click', function() {
+                            cityInput.value = city.name;
+                            selectedCity = city.ref;
+                            citiesList.style.display = 'none';
+                            departmentInput.focus();
+                            updateSubmitButton();
+                        });
+                        citiesList.appendChild(item);
+                    });
+                }
+                
+                citiesList.style.display = 'block';
+            }
+            
+            // Поиск отделений для Новой Почты через API
+            async function searchDepartmentsNovaPoshta(query) {
+                try {
+                    departmentsList.innerHTML = '<div class="loading">Пошук...</div>';
+                    departmentsList.style.display = 'block';
+                    
+                    let endpoint = '/api/departments';
+                    const departmentType = document.querySelector('input[name="departmentType"]:checked').value;
+                    if (departmentType === 'postmats') {
+                        endpoint = '/api/postmats';
+                    }
+                    
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ 
+                            cityRef: selectedCity, 
+                            search: query 
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Помилка сервера');
+                    }
+                    
+                    const departments = await response.json();
+                    
+                    if (departments.error) {
+                        throw new Error(departments.error);
+                    }
+                    
+                    displayDepartments(departments);
+                } catch (error) {
+                    console.error('Error searching departments:', error);
+                    departmentsList.innerHTML = '<div class="department-item">Помилка пошуку: ' + error.message + '</div>';
+                }
+            }
+            
+            // Функция отображения списка отделений
+            function displayDepartments(departments) {
+                departmentsList.innerHTML = '';
+                
+                if (!departments || departments.length === 0) {
+                    departmentsList.innerHTML = '<div class="department-item">Нічого не знайдено</div>';
+                } else {
+                    departments.forEach(department => {
+                        const item = document.createElement('div');
+                        item.className = 'department-item';
+                        
+                        let typeBadge = '';
+                        if (department.type === 'postmat') {
+                            typeBadge = '<span class="department-type-badge">Поштомат</span>';
+                        }
+                        
+                        item.innerHTML = `
+                            <div class="department-name">${department.name} ${typeBadge}</div>
+                            <div class="department-address">${department.address}</div>
+                        `;
+                        item.addEventListener('click', function() {
+                            departmentInput.value = department.name;
+                            selectedDepartment = department.ref;
+                            departmentsList.style.display = 'none';
+                            updateSubmitButton();
+                        });
+                        departmentsList.appendChild(item);
+                    });
+                }
+                
+                departmentsList.style.display = 'block';
+            }
+            
+            // Функция показа ошибки
+            function showError(element, message) {
+                const existingError = element.parentNode.querySelector('.error-message');
+                if (existingError) {
+                    existingError.remove();
+                }
+                
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.textContent = message;
+                element.parentNode.appendChild(errorDiv);
+                
+                setTimeout(() => {
+                    errorDiv.remove();
+                }, 3000);
+            }
+            
+            // Обновление состояния кнопки отправки
+            function updateSubmitButton() {
+                const fullName = document.getElementById('fullName').value.trim();
+                const phone = document.getElementById('phone').value.trim();
+                
+                if (fullName && phone && selectedCity && selectedDepartment) {
+                    submitBtn.disabled = false;
+                } else {
+                    submitBtn.disabled = true;
+                }
+            }
+            
+            // Обработчики обновления состояния кнопки
+            document.getElementById('fullName').addEventListener('input', updateSubmitButton);
+            document.getElementById('phone').addEventListener('input', updateSubmitButton);
+            
+            // Обработчик отправки формы
+            submitBtn.addEventListener('click', async function() {
+                const fullName = document.getElementById('fullName').value.trim();
+                const phone = document.getElementById('phone').value.trim();
+                
+                if (!fullName || !phone || !selectedCity || !selectedDepartment) {
+                    alert('Будь ласка, заповніть всі обов\'язкові поля');
+                    return;
+                }
+                
+                try {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Обробка...';
+                    
+                    const response = await fetch('/api/order', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            fullName,
+                            phone,
+                            service: 'nova-poshta',
+                            city: cityInput.value,
+                            department: departmentInput.value
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        successMessage.textContent = `Замовлення #${result.orderNumber} успішно створено! ${result.message}`;
+                        successMessage.style.display = 'block';
+                        
+                        // Очищаем форму
+                        document.getElementById('fullName').value = '';
+                        document.getElementById('phone').value = '';
+                        cityInput.value = '';
+                        departmentInput.value = '';
+                        selectedCity = '';
+                        selectedDepartment = '';
+                        updateSubmitButton();
+                        
+                        // Прокручиваем к верху чтобы показать сообщение
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        
+                        // Скрываем сообщение через 5 секунд
+                        setTimeout(() => {
+                            successMessage.style.display = 'none';
+                        }, 5000);
+                    } else {
+                        alert('Помилка при створенні замовлення: ' + result.error);
+                    }
+                } catch (error) {
+                    console.error('Error creating order:', error);
+                    alert('Помилка при створенні замовлення');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Підтвердити замовлення';
+                }
+            });
+            
+            // Закрытие выпадающих списков при клике вне их
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('#city') && !e.target.closest('#cities-list')) {
+                    citiesList.style.display = 'none';
+                }
+                
+                if (!e.target.closest('#department') && !e.target.closest('#departments-list')) {
+                    departmentsList.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
