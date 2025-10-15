@@ -34,8 +34,13 @@ async function callNovaPoshtaAPI(modelName, methodName, methodProperties) {
 
 // Все остальные маршруты остаются такими же...
 
+
 // Обслуживание фронтенда
-app.get('/', (req, res) => {
+// Обслуживание статических файлов
+app.use(express.static(path.join(__dirname, 'my-frontend')));
+
+// Все маршруты направляем на index.html
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'my-frontend', 'index.html'));
 });
 
